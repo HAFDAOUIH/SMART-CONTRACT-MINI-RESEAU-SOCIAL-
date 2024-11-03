@@ -1,28 +1,100 @@
-REMIX DEFAULT WORKSPACE
+# MiniSocial Smart Contract
 
-Remix default workspace is present when:
-i. Remix loads for the very first time 
-ii. A new workspace is created with 'Default' template
-iii. There are no files existing in the File Explorer
+MiniSocial is a decentralized social media platform built on the Ethereum blockchain. This smart contract allows users to publish, retrieve, and delete messages on-chain, offering a transparent and immutable way to store and manage messages.
 
-This workspace contains 3 directories:
+## Features
 
-1. 'contracts': Holds three contracts with increasing levels of complexity.
-2. 'scripts': Contains four typescript files to deploy a contract. It is explained below.
-3. 'tests': Contains one Solidity test file for 'Ballot' contract & one JS test file for 'Storage' contract.
+- **Publish Messages**: Users can publish messages to the blockchain.
+- **Retrieve Messages**: Anyone can retrieve messages by their index.
+- **Total Message Count**: Retrieve the total number of messages.
+- **Delete Own Messages**: Users can delete only their own messages.
+- **User Message Count**: Track the number of messages each user has published.
 
-SCRIPTS
+## Contract Architecture
 
-The 'scripts' folder has four typescript files which help to deploy the 'Storage' contract using 'web3.js' and 'ethers.js' libraries.
+The contract is written in Solidity and includes the following main components:
 
-For the deployment of any other contract, just update the contract's name from 'Storage' to the desired contract and provide constructor arguments accordingly 
-in the file `deploy_with_ethers.ts` or  `deploy_with_web3.ts`
+- **Struct `Post`**: Represents a message, including:
+  - `message`: The content of the message (string).
+  - `author`: The address of the message author.
+  - `timestamp`: The time the message was published.
 
-In the 'tests' folder there is a script containing Mocha-Chai unit tests for 'Storage' contract.
+- **Dynamic Array `posts`**: Stores all `Post` structures.
 
-To run a script, right click on file name in the file explorer and click 'Run'. Remember, Solidity file must already be compiled.
-Output from script will appear in remix terminal.
+- **Mapping `userPostCount`**: Maps user addresses to their respective message counts.
 
-Please note, require/import is supported in a limited manner for Remix supported modules.
-For now, modules supported by Remix are ethers, web3, swarmgw, chai, multihashes, remix and hardhat only for hardhat.ethers object/plugin.
-For unsupported modules, an error like this will be thrown: '<module_name> module require is not supported by Remix IDE' will be shown.
+- **Events**:
+  - `NewPost`: Emitted when a new message is published.
+  - `PostDeleted`: Emitted when a message is deleted.
+
+- **Modifiers**:
+  - `validMessage`: Ensures that messages are non-empty and within the maximum length (280 characters).
+
+## Functions
+
+- **publishPost(string memory _message)**: Publishes a new message on the blockchain.
+- **getPost(uint index)**: Retrieves a specific message by its index.
+- **getTotalPosts()**: Returns the total number of messages.
+- **deletePost(uint index)**: Allows users to delete their own messages by index.
+- **getUserPostCount(address user)**: Returns the number of messages a specific user has published.
+
+## Prerequisites
+
+To deploy and interact with this contract, you will need:
+
+- **MetaMask**: Set up with the Sepolia test network.
+- **Remix IDE**: For compiling, deploying, and testing the contract.
+- **SepoliaETH**: Test Ether to cover gas fees, obtainable from a faucet.
+
+## Deployment and Testing Steps
+
+1. **Configure MetaMask**:
+   - Ensure your MetaMask wallet is set to the Sepolia test network.
+   - Obtain SepoliaETH from a faucet to cover transaction fees.
+
+2. **Deploy the Contract**:
+   - Open the contract in Remix IDE.
+   - Select "Injected Provider - MetaMask" as the environment.
+   - Compile and deploy the contract.
+   - Confirm the deployment transaction in MetaMask.
+
+3. **Testing the Functions**:
+   - **Publish a Post**: Call `publishPost` with a sample message. Verify the transaction and event on Etherscan.
+   - **Retrieve a Post**: Use `getPost` with the index of a published message to view its content, author, and timestamp.
+   - **Check Total Posts**: Call `getTotalPosts` to view the number of messages published.
+   - **Delete a Post**: Use `deletePost` to delete a message you authored. Confirm the deletion event on Etherscan.
+   - **Check User Post Count**: Use `getUserPostCount` with your address to view your message count.
+
+## Example Usage
+
+Here’s an example of how to publish and retrieve a post:
+
+```solidity
+// Publish a new post
+publishPost("Hello, blockchain!");
+
+// Retrieve the first post
+(string memory message, address author, uint256 timestamp) = getPost(0);```
+
+## Events
+
+- **NewPost**: Emitted when a user publishes a new message.
+  - `author`: Address of the user who published the message.
+  - `message`: The content of the message.
+  - `postId`: The ID of the message in the array.
+  - `timestamp`: The time the message was published.
+
+- **PostDeleted**: Emitted when a user deletes their own message.
+  - `postId`: The ID of the deleted message.
+  - `author`: Address of the user who deleted the message.
+
+## Security Considerations
+
+- **Only Author Can Delete**: The `deletePost` function uses a check to ensure that only the original author can delete their post.
+- **Message Validation**: The `validMessage` modifier ensures that each message is within the maximum allowed length and is not empty.
+
+
+
+
+This `README.md` file now includes all sections, including **Events** and **Security Considerations**, formatted for clarity. Let me know if you need any additional modifications!
+
