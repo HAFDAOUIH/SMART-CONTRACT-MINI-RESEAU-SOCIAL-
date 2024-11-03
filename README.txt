@@ -69,6 +69,29 @@ To deploy and interact with this contract, you will need:
 
 Here’s an example of how to publish and retrieve a post:
 
+```solidity
+// Publish a new post
+publishPost("Hello, blockchain!");
+
+// Retrieve the first post
+(string memory message, address author, uint256 timestamp) = getPost(0);
+
+## Events
+
+- **NewPost**: Emitted when a user publishes a new message.
+  - `author`: Address of the user who published the message.
+  - `message`: The content of the message.
+  - `postId`: The ID of the message in the array.
+  - `timestamp`: The time the message was published.
+
+- **PostDeleted**: Emitted when a user deletes their own message.
+  - `postId`: The ID of the deleted message.
+  - `author`: Address of the user who deleted the message.
+
+## Security Considerations
+
+- **Only Author Can Delete**: The `deletePost` function uses a check to ensure that only the original author can delete their post.
+- **Message Validation**: The `validMessage` modifier ensures that each message is within the maximum allowed length and is not empty.
 
 
 
